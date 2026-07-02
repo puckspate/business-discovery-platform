@@ -14,12 +14,22 @@ def create_company(company: CompanyCreate):
     company_id = CompanyService.create(company)
 
     return {
-        "id": company_id,
+        "success": True,
         "message": "Company created successfully",
+        "data": {
+            "id": company_id
+        }
     }
 
 
-@router.get("", response_model=List[CompanyResponse])
+@router.get("", response_model=dict)
 def get_companies():
 
-    return CompanyService.get_all()
+    companies = CompanyService.get_all()
+
+    return {
+        "success": True,
+        "message": "Companies retrieved successfully",
+        "count": len(companies),
+        "data": companies,
+    }
