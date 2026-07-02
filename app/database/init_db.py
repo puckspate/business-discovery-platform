@@ -29,4 +29,18 @@ def initialize_database():
         )
     """)
 
+    # Documents table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS documents (
+	    id VARCHAR PRIMARY KEY,
+	    discovery_id VARCHAR NOT NULL,
+	    file_name VARCHAR NOT NULL,
+	    file_type VARCHAR,
+	    file_size BIGINT,
+	    storage_path VARCHAR,
+	    status VARCHAR DEFAULT 'UPLOADED',
+	    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	)
+    """)
+
     conn.close()
