@@ -6,9 +6,9 @@ from fastapi import UploadFile
 
 from app.repositories.document_repository import DocumentRepository
 from engine.analyzers.excel_analyzer import ExcelAnalyzer
+from engine.classifiers.document_classifier import DocumentClassifier
 
 UPLOAD_DIR = Path("data/uploads")
-
 
 class DocumentService:
 
@@ -46,7 +46,23 @@ class DocumentService:
         if document is None:
             raise ValueError("Document not found")
 
+        extension = Path(document["storage_path"]).suffix.lower()
+
+        if extension not in [".xlsx", ".xlsm", ".xltx", ".xltm"]:
+            return {
+                "document_id": document["id"],
+                "file_name": document["file_name"],
+                "error": f"Unsupported file type: {extension}"
+            }
+
         metadata = ExcelAnalyzer.analyze(document["storage_path"])
+        first_sheet = metadata["worksheets"][0]
+
+        classification = DocumentClassifier.classify(
+            first_sheet["headers"]
+        )
+
+        metadata["classification"] = classification
 
         return {
             "document_id": document["id"],
