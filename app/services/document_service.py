@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi import UploadFile
 
 from app.repositories.document_repository import DocumentRepository
+from engine.analyzers.excel_analyzer import ExcelAnalyzer
 
 UPLOAD_DIR = Path("data/uploads")
 
@@ -36,3 +37,20 @@ class DocumentService:
         )
 
         return document_id
+
+    @staticmethod
+    def analyze(document_id: str):
+
+        document = DocumentRepository.get_by_id(document_id)
+
+        if document is None:
+            raise ValueError("Document not found")
+
+        metadata = ExcelAnalyzer.analyze(document["storage_path"])
+
+        return {
+            "document_id": document["id"],
+            "file_name": document["file_name"],
+            "file_type": document["file_type"],
+            **metadata,
+        }
