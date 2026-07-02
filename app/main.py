@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.core.logger import logger
 from app.database.duckdb import get_connection
 from app.routers.companies import router as company_router
+from app.routers.discoveries import router as discovery_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,6 +29,7 @@ app = FastAPI(
 )
 
 app.include_router(company_router)
+app.include_router(discovery_router)
 
 @app.get("/")
 def root():
