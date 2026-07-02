@@ -5,15 +5,14 @@ from fastapi import FastAPI
 from app.core.config import settings
 from app.core.logger import logger
 from app.database.duckdb import get_connection
-
+from app.routers.companies import router as company_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Business Discovery Platform")
 
-    conn = get_connection()
-    conn.execute("SELECT 1")
-    conn.close()
+    from app.database.init_db import initialize_database
+    initialize_database()
 
     logger.info("DuckDB initialized")
 
@@ -28,6 +27,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(company_router)
 
 @app.get("/")
 def root():
